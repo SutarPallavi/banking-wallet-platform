@@ -47,7 +47,7 @@ public class GatewayConfig {
 		http
 			.csrf(ServerHttpSecurity.CsrfSpec::disable)
 			.authorizeExchange(exchanges -> exchanges
-				.pathMatchers("/actuator/**", "/docs", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+				.pathMatchers("/actuator/**", "/docs", "/swagger-ui/**", "/v3/api-docs/**", "/test/**", "/auth/token").permitAll()
 				.anyExchange().authenticated()
 			)
 			.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> {
@@ -64,6 +64,10 @@ public class GatewayConfig {
 	public RouteLocator routes(RouteLocatorBuilder builder) {
 		RedisRateLimiter rateLimiter = new RedisRateLimiter(100, 200);
 		return builder.routes()
+			.route("auth-token", r -> r
+				.path("/auth/token")
+				.filters(f -> f.rewritePath("/auth/token", "/oauth2/token"))
+				.uri("http://auth-service:9000"))
 			.route("accounts", r -> r.path("/api/accounts/**").uri("lb://account-service"))
 			.route("transactions", r -> r.path("/api/transactions/**").uri("lb://transaction-service"))
 			.route("payments", r -> r.path("/api/payments/**").uri("lb://payment-service"))

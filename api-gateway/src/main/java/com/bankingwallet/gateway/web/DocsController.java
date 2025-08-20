@@ -9,4 +9,9 @@ public class DocsController {
 	public String docs() {
 		return "docs";
 	}
+
+	@GetMapping("/test")
+	public String test() {
+		return "test";
+	}
 }

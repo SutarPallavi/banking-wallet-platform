@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Banking Wallet Test UI</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; }
+    input, button, textarea { font: inherit; padding: 8px; margin: 4px 0; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin: 16px 0; }
+    .row { display: flex; gap: 12px; align-items: center; }
+    textarea { width: 100%; height: 140px; }
+    code { background: #f6f8fa; padding: 2px 4px; border-radius: 4px; }
+  </style>
+  <script>
+    async function token() {
+      const clientId = document.getElementById('clientId').value || 'demo-client';
+      const clientSecret = document.getElementById('clientSecret').value || 'demo-secret';
+      const username = document.getElementById('username').value || 'alice@example.com';
+      const password = document.getElementById('password').value || 'password';
+      const basic = btoa(clientId + ':' + clientSecret);
+      const form = new URLSearchParams({
+        grant_type: 'password',
+        username,
+        password
+      });
+      const res = await fetch('/auth/token', {
+        method: 'POST',
+        headers: { 'Authorization': 'Basic ' + basic, 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: form.toString()
+      });
+      const json = await res.json();
+      document.getElementById('token').value = json.access_token || JSON.stringify(json, null, 2);
+    }
+    async function createAccount() {
+      const token = document.getElementById('token').value.trim();
+      const ownerId = document.getElementById('ownerId').value || 'alice@example.com';
+      const res = await fetch('/api/accounts', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ownerId })
+      });
+      const json = await res.json();
+      document.getElementById('accountId').value = json.id || '';
+      document.getElementById('out').value = JSON.stringify(json, null, 2);
+    }
+    async function getAccount() {
+      const token = document.getElementById('token').value.trim();
+      const id = document.getElementById('accountId').value.trim();
+      const res = await fetch('/api/accounts/' + id, { headers: { 'Authorization': 'Bearer ' + token } });
+      const json = await res.json();
+      document.getElementById('out').value = JSON.stringify(json, null, 2);
+    }
+  </script>
+</head>
+<body>
+  <h1>Banking Wallet Test UI</h1>
+  <p>Use this page to get a token, create an account, and fetch it via the API Gateway.</p>
+
+  <div class="card">
+    <h3>1) Get token</h3>
+    <div class="row">
+      <label>Client</label>
+      <input id="clientId" placeholder="client id" value="demo-client" />
+      <input id="clientSecret" placeholder="client secret" value="demo-secret" />
+    </div>
+    <div class="row">
+      <label>User</label>
+      <input id="username" placeholder="username" value="alice@example.com" />
+      <input id="password" placeholder="password" type="password" value="password" />
+      <button onclick="token()">Fetch Token</button>
+    </div>
+    <input id="token" placeholder="access token" style="width: 100%" />
+  </div>
+
+  <div class="card">
+    <h3>2) Accounts</h3>
+    <div class="row">
+      <input id="ownerId" placeholder="ownerId" value="alice@example.com" style="flex: 1" />
+      <button onclick="createAccount()">Create</button>
+    </div>
+    <div class="row">
+      <input id="accountId" placeholder="account id" style="flex: 1" />
+      <button onclick="getAccount()">Get</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Output</h3>
+    <textarea id="out" placeholder="Response will appear here..."></textarea>
+  </div>
+
+  <p>Docs: <a href="/swagger-ui/index.html">Gateway Swagger</a></p>
+</body>
+</html>
+
+
