@@ -8,3 +8,4 @@ public interface NotificationRepository extends MongoRepository<NotificationRead
 	Page<NotificationRead> findByUserIdOrderByCreatedAtDesc(String userId, Pageable pageable);
 }
 
+

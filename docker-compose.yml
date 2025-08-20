@@ -54,6 +54,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: native
       SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
+      SPRING_CLOUD_COMPATIBILITY_VERIFIER_ENABLED: "false"
     volumes:
       - ./config-repo:/config-repo:ro
     ports:
@@ -66,6 +67,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_CLOUD_CONFIG_URI: http://config-server:8888
+      SPRING_CLOUD_COMPATIBILITY_VERIFIER_ENABLED: "false"
     ports:
       - "8761:8761"
 
@@ -91,6 +93,7 @@ services:
       SPRING_CLOUD_CONFIG_URI: http://config-server:8888
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
+      SPRING_CLOUD_COMPATIBILITY_VERIFIER_ENABLED: "false"
     ports:
       - "8080:8080"
 

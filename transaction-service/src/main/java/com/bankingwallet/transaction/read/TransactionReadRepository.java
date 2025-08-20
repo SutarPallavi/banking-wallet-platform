@@ -12,3 +12,4 @@ public interface TransactionReadRepository extends MongoRepository<TransactionRe
 	Page<TransactionReadModel> findByFromAccountIdOrToAccountId(UUID from, UUID to, Pageable pageable);
 }
 
+

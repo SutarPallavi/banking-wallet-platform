@@ -14,3 +14,4 @@ COPY --from=build /workspace/target/transaction-service-*.jar /app/app.jar
 EXPOSE 8082
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]
 
+

@@ -11,3 +11,4 @@ public interface AccountEventRepository extends JpaRepository<AccountEventEntity
 	Optional<AccountEventEntity> findTopByAccountIdOrderByVersionDesc(UUID accountId);
 }
 
+

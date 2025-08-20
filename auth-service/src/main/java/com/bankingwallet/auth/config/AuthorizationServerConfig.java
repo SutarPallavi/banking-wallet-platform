@@ -40,6 +40,8 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -52,15 +54,17 @@ import java.util.UUID;
 public class AuthorizationServerConfig {
 
 	@Bean
-	public SecurityFilterChain authServerSecurityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain authServerSecurityFilterChain(HttpSecurity http, AuthenticationFilter passwordGrantFilter) throws Exception {
 		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
 			.oidc(Customizer.withDefaults());
+		// Ensure custom password grant endpoint is handled within the auth server chain
+		http.addFilterBefore(passwordGrantFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 
 	@Bean
-	public SecurityFilterChain appSecurityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain appSecurityFilterChain(HttpSecurity http, AuthenticationFilter passwordGrantFilter) throws Exception {
 		http
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/.well-known/jwks.json", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
@@ -68,6 +72,8 @@ public class AuthorizationServerConfig {
 			)
 			.oauth2ResourceServer(resource -> resource.jwt(Customizer.withDefaults()))
 			.formLogin(Customizer.withDefaults());
+		// Enable password grant custom endpoint handler
+		http.addFilterBefore(passwordGrantFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 

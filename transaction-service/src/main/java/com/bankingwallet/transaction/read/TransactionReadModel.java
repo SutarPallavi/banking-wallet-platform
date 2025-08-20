@@ -37,3 +37,4 @@ public class TransactionReadModel {
 	public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
 }
 
+

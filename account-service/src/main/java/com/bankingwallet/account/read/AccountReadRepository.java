@@ -9,3 +9,4 @@ public interface AccountReadRepository extends MongoRepository<AccountReadModel,
 	Optional<AccountReadModel> findByAccountId(UUID accountId);
 }
 
+

@@ -30,3 +30,4 @@ public class NotificationRead {
 	public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 }
 
+

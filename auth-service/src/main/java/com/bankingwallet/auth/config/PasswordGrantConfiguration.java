@@ -49,36 +49,32 @@ public class PasswordGrantConfiguration {
 			if (client == null || !client.getAuthorizationGrantTypes().contains(new AuthorizationGrantType("password"))) {
 				throw new OAuth2AuthenticationException(new OAuth2Error(OAuth2ErrorCodes.UNAUTHORIZED_CLIENT));
 			}
-			Authentication userAuth = authenticationManager.authenticate(org.springframework.security.authentication.UsernamePasswordAuthenticationToken.unauthenticated(username, password));
-			// On success, issue a simple JWT access token
+			return org.springframework.security.authentication.UsernamePasswordAuthenticationToken.unauthenticated(username, password);
+		};
+
+		AuthenticationFilter filter = new AuthenticationFilter(authenticationManager, converter) {
+			@Override
+			protected boolean shouldNotFilter(HttpServletRequest request) {
+				return !("/oauth2/password".equals(request.getRequestURI()) &&
+						"password".equals(request.getParameter(OAuth2ParameterNames.GRANT_TYPE)) &&
+						"POST".equalsIgnoreCase(request.getMethod()));
+			}
+		};
+		filter.setRequestMatcher(new AntPathRequestMatcher("/oauth2/password", "POST"));
+		filter.setSuccessHandler((request, response, authentication) -> {
 			Instant now = Instant.now();
 			String issuer = request.getScheme() + "://" + request.getServerName() + (request.getServerPort() == 80 || request.getServerPort() == 443 ? "" : (":" + request.getServerPort()));
 			JwtClaimsSet claims = JwtClaimsSet.builder()
 				.issuer(issuer)
 				.issuedAt(now)
 				.expiresAt(now.plus(1, ChronoUnit.HOURS))
-				.subject(userAuth.getName())
+				.subject(authentication.getName())
 				.claim("scope", "read write")
-				.claim("roles", userAuth.getAuthorities())
+				.claim("roles", authentication.getAuthorities())
 				.build();
 			String tokenValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-			return new org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken(tokenValue);
-		};
-
-		AuthenticationFilter filter = new AuthenticationFilter(authenticationManager, converter) {
-			@Override
-			protected boolean shouldNotFilter(HttpServletRequest request) {
-				return !("/oauth2/token".equals(request.getRequestURI()) &&
-						"password".equals(request.getParameter(OAuth2ParameterNames.GRANT_TYPE)) &&
-						"POST".equalsIgnoreCase(request.getMethod()));
-			}
-		};
-		filter.setRequestMatcher(new AntPathRequestMatcher("/oauth2/token", "POST"));
-		filter.setSuccessHandler((request, response, authentication) -> {
-			// Return JSON: {"access_token": "...", "token_type": "Bearer"}
-			String token = ((org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken) authentication).getToken();
 			response.setContentType("application/json");
-			response.getWriter().write("{\"access_token\":\"" + token + "\",\"token_type\":\"Bearer\"}");
+			response.getWriter().write("{\"access_token\":\"" + tokenValue + "\",\"token_type\":\"Bearer\"}");
 		});
 		filter.setFailureHandler((request, response, exception) -> {
 			response.setStatus(400);

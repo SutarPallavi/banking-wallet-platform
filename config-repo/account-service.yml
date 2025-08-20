@@ -3,6 +3,12 @@ server:
 spring:
   application:
     name: account-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://auth-service:9000
+          jwk-set-uri: http://auth-service:9000/.well-known/jwks.json
   sleuth:
     sampler:
       probability: 1.0

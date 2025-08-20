@@ -40,3 +40,4 @@ public class TransactionEventEntity {
 	public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 }
 
+

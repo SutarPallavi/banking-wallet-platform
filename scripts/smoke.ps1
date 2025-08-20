@@ -1,8 +1,6 @@
-$pair = 'demo-client:demo-secret'
-$b64 = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes($pair))
-$headers = @{ Authorization = "Basic $b64"; 'Content-Type' = 'application/x-www-form-urlencoded' }
-$body = 'grant_type=password&username=alice@example.com&password=password'
-$tokenResp = Invoke-RestMethod -Method Post -Uri 'http://localhost:9000/oauth2/token' -Headers $headers -Body $body
+$headers = @{ 'Content-Type' = 'application/x-www-form-urlencoded' }
+$body = 'grant_type=password&client_id=demo-client&username=alice@example.com&password=password'
+$tokenResp = Invoke-RestMethod -Method Post -Uri 'http://localhost:9000/oauth2/password' -Headers $headers -Body $body
 $token = $tokenResp.access_token
 Write-Host ("Token: {0}..." -f $token.Substring(0,20))
 

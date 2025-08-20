@@ -16,6 +16,8 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/wallet
+  kafka:
+    bootstrap-servers: localhost:9092
 
 management:
   endpoints:
@@ -27,7 +29,5 @@ springdoc:
   swagger-ui:
     path: /swagger-ui/index.html
 
-spring:
-  kafka:
-    bootstrap-servers: localhost:9092
+
 

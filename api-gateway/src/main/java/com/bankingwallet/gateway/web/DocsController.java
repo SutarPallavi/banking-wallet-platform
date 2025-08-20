@@ -12,6 +12,6 @@ public class DocsController {
 
 	@GetMapping("/test")
 	public String test() {
-		return "test";
+		return "redirect:/test/index.html";
 	}
 }

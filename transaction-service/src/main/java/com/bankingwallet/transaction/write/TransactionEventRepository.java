@@ -11,3 +11,4 @@ public interface TransactionEventRepository extends JpaRepository<TransactionEve
 	Optional<TransactionEventEntity> findTopByTransactionIdOrderByVersionDesc(UUID transactionId);
 }
 
+

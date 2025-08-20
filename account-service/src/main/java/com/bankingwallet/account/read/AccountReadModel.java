@@ -31,3 +31,4 @@ public class AccountReadModel {
 	public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
 }
 
+
