@@ -1,0 +1,38 @@
+#!/bin/sh
+# Apache Maven Wrapper startup script
+# Minimal script that downloads the Maven Wrapper JAR if missing and runs Maven
+
+set -e
+
+BASE_DIR=$(dirname "$0")
+WRAPPER_JAR="$BASE_DIR/.mvn/wrapper/maven-wrapper.jar"
+WRAPPER_PROPERTIES="$BASE_DIR/.mvn/wrapper/maven-wrapper.properties"
+
+if [ ! -f "$WRAPPER_PROPERTIES" ]; then
+  echo "Cannot find $WRAPPER_PROPERTIES" >&2
+  exit 1
+fi
+
+# Extract wrapperUrl from properties
+WRAPPER_URL=$(grep -E "^wrapperUrl=" "$WRAPPER_PROPERTIES" | cut -d'=' -f2-)
+
+# Download wrapper jar if missing
+if [ ! -f "$WRAPPER_JAR" ]; then
+  echo "Downloading Maven Wrapper JAR from $WRAPPER_URL"
+  mkdir -p "$BASE_DIR/.mvn/wrapper"
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsSL -o "$WRAPPER_JAR" "$WRAPPER_URL"
+  elif command -v wget >/dev/null 2>&1; then
+    wget -q -O "$WRAPPER_JAR" "$WRAPPER_URL"
+  else
+    echo "curl or wget is required to download the Maven Wrapper JAR" >&2
+    exit 1
+  fi
+fi
+
+JAVA_EXE="java"
+if [ -n "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/java" ]; then
+  JAVA_EXE="$JAVA_HOME/bin/java"
+fi
+
+exec "$JAVA_EXE" -classpath "$WRAPPER_JAR" org.apache.maven.wrapper.MavenWrapperMain "$@"

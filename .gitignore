@@ -1,0 +1,44 @@
+# Java
+*.class
+*.war
+*.ear
+hs_err_pid*
+
+# Maven
+target/
+pom.xml.tag
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.settings/
+.factorypath
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+.env
+docker-compose.override.yml
+docker-data/
+.docker/
+
+# Coverage / reports
+jacoco.exec
+target/site/
+
+

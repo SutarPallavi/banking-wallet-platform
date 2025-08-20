@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: api-gateway
+  config:
+    import: "optional:configserver:"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui/index.html
